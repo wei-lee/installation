@@ -5,6 +5,7 @@
     multitenant: "{{ enmasse_multitenant }}"
     enable_rbac: "{{ enmasse_enable_rbac }}"
     service_catalog: "{{ enmasse_service_catalog }}"
+    api_server:  "{{enmasse_api_server}}"
     keycloak_admin_password: "{{ enmasse_keycloak_admin_password }}"
     authentication_services: "{{ enmasse_authentication_services }}"
   when: enmasse_deploy_infra | default('true') | bool
