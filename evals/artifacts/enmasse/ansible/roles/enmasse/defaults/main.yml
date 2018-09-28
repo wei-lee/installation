@@ -4,7 +4,7 @@ multitenant: true
 enable_rbac: true
 keycloak_admin_user: admin
 service_catalog: false
-register_api_server: false
+register_api_server: true
 secure_api_server: false
 api_server: true
 authentication_services:
