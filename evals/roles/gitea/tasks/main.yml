@@ -39,7 +39,7 @@
 
 - name: Create a random password for the gitea admin user
   set_fact:
-    - gitea_admin_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    gitea_admin_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
 
 - name: Print out the gitea admin password in the installer logs
   debug:
