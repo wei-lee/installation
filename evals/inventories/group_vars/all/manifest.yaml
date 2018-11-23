@@ -1,0 +1,3 @@
+---
+install_enmasse: true
+install_enmasse_version: '0.24.1'
