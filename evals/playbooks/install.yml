@@ -246,7 +246,6 @@
 
 - import_playbook: "./generate-customisation-inventory.yml"
 
-- import_playbook: "./manifest.yaml"
 
 - hosts: localhost
   gather_facts: no
