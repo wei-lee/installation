@@ -200,6 +200,7 @@
       include_role:
         name: enmasse
       tags: ['enmasse']
+      when: install_enmasse == 'true'
     -
       name: Configure SSO Logout URL
       include_role:
@@ -245,6 +246,8 @@
 
 - import_playbook: "./generate-customisation-inventory.yml"
 
+- import_playbook: "./manifest.yaml"
+
 - hosts: localhost
   gather_facts: no
   tasks:
@@ -252,4 +255,6 @@
         msg: All services have been provisioned successfully. Please add '{{ callback_url }}' as the Authorization callback URL of your GitHub OAuth Application.
       vars:
         callback_url: https://{{ launcher_sso_route }}/auth/realms/{{ eval_launcher_sso_realm }}/broker/github/endpoint
+
+
 

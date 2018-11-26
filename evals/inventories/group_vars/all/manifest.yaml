@@ -1,3 +1,6 @@
 ---
 install_enmasse: true
 install_enmasse_version: '0.24.1'
+install_che: true
+install_che_registry: 'docker.io'
+install_che_version: '6.9.0'

@@ -1,0 +1,7 @@
+---
+- hosts: local
+  gather_facts: no
+  roles:
+#  - role: customisation
+#    tasks_from: set_dynamic_vars.yaml
+  - role: manifest

@@ -1,0 +1,17 @@
+---
+- name: build component manifest
+  vars:
+    components: []
+  set_fact:
+    components: "{{components}} + [{'version':'{{install_enmasse_version}}','name':'enmasse', 'host':'{{enmasse_rest_route}}'}]"
+  when: install_enmasse == 'true'
+
+- set_fact:
+    components: "{{components}} + [{'version':'{{install_che_version}}','name':'che', 'host':'{{che_route}}'}]"
+  when: install_che == 'true'
+
+
+- name: Generate cluster manifest
+  template:
+    src: "manifest.json.j2"
+    dest: /tmp/generated_manifest.json
