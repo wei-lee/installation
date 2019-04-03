@@ -13,7 +13,7 @@
           name: EVAL_VARS
           eval_app_host: "{{ eval_app_host }}"
           openshift_master_url: "{{ openshift_master_url }}"
-  when: not (run_master_tasks | default(true) | bool)
+      when: not (run_master_tasks | default(true) | bool)
 
 - hosts: master
   gather_facts: no
@@ -31,7 +31,7 @@
           eval_app_host: "{{ (eval_master_config['content'] | b64decode | from_yaml)['routingConfig']['subdomain'] }}"
           openshift_master_url: "{{ (eval_master_config['content'] | b64decode | from_yaml)['masterPublicURL'] }}"
       tags: ['bootstrap', 'remote']
-  when: run_master_tasks | default(true) | bool
+      when: run_master_tasks | default(true) | bool
 
 - import_playbook: "./prerequisites.yml"
 - import_playbook: "./openshift.yml"
@@ -52,8 +52,7 @@
     - name: remove integreatly-admin user
       shell: "htpasswd -D /etc/origin/master/htpasswd integreatly-admin"
       become: yes
-      when: create_cluster_admin
-  when: run_master_tasks | default(true) | bool
+      when: (run_master_tasks | default(true) | bool) and create_cluster_admin
 
 - import_playbook: ./install_backups.yml
   when: backup_restore_install | default(false) | bool

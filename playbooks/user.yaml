@@ -26,8 +26,7 @@
         shell: oc adm policy add-cluster-role-to-user cluster-admin integreatly-admin
         register: oc_cmd
         failed_when: oc_cmd.rc != 0
-    when: create_cluster_admin
-  when: run_master_tasks | default(true) | bool
+    when: (run_master_tasks | default(true) | bool) and create_cluster_admin
 
 - hosts: localhost
   gather_facts: no
