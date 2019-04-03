@@ -124,3 +124,4 @@
         name: rhsso
         tasks_from: remove_identityprovider
       tags: ['rhsso']
+  when: run_master_tasks | default(true) | bool

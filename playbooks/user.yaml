@@ -27,6 +27,7 @@
         register: oc_cmd
         failed_when: oc_cmd.rc != 0
     when: create_cluster_admin
+  when: run_master_tasks | default(true) | bool
 
 - hosts: localhost
   gather_facts: no
