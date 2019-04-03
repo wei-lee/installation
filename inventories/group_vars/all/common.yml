@@ -33,7 +33,10 @@ eval_threescale_enable_wildcard_route: false
 create_cluster_admin: true
 # override to set a namespace prefix.
 
-# run_master_tasks: (boolean)
+#run_master_tasks: (boolean)
+#
+# Default is true when checked in various places.
+# No default is set here, as it wouldn't be overwriteable in an inventory file
 #
 # If true, any tasks that need to happen on the master will be run.
 # For example:
@@ -51,5 +54,3 @@ create_cluster_admin: true
 # - add the relevant cors rule to the master-config.yaml
 # - add the cluster SSO identity provider to the master-config.yaml
 # - restart the master(s)
-#
-run_master_tasks: true
