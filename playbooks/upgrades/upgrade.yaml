@@ -165,11 +165,6 @@
         name: rhsso
         tasks_from: upgrade
 
-    - name: Fuse Online upgrade
-      include_role:
-        name: fuse_managed
-        tasks_from: upgrade
-
     - name: AMQ Online upgrade
       include_role:
         name: enmasse
