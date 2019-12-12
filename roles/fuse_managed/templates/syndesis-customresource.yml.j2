@@ -15,7 +15,11 @@ spec:
       resources: {}
     upgrade:
       resources: {}
-  imageStreamNamespace: {{ fuse_namespace }}
+    imageStreamNamespace: {{ fuse_namespace }}
+    {# NOTE: uncomment this when new release of syndesis operator is available
+    oauth:
+      disableSarCheck: true
+    #}
   addons:
     ops: 
       enabled: "true"

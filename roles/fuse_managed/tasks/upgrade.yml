@@ -61,6 +61,8 @@
   delay: 10
 
 - name: Patch db deployment configs to make sure they are using image streams from the right namespace
+  #shell: oc patch dc/syndesis-db --type=json --patch='[{"op":"replace", "path":"/spec/triggers/1/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}, {"op":"replace", "path":"/spec/triggers/2/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}]' -n {{ fuse_namespace }}
+  # NOTE: when the new release of syndesis operator is available, we probably should replace the following line with the one that is commented above, as by the look of the fix, the db should container should use a image stream from the current namespace as well. 
   shell: oc patch dc/syndesis-db --type=json --patch='[{"op":"replace", "path":"/spec/triggers/2/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}]' -n {{ fuse_namespace }}
 
 - name: Patch all the other infrastructure deployment configs to make sure they are using image streams from the right namespace
@@ -72,6 +74,10 @@
     - syndesis-server
     - syndesis-ui
 
+# NOTE: uncomment this when new release of syndesis operator is available
+# - name: Remove OpenShift SAR configuration on Fuse Managed OAuth proxy
+#  shell: sleep 5; oc get dc syndesis-oauthproxy -o yaml -n {{ fuse_namespace }} | sed '/--openshift-sar/d' | oc apply -f - -n {{ fuse_namespace }}; sleep 5
+
 - name: Wait for a new deployment is started
   shell: oc get pods | grep -- "-deploy" | wc -l
   register: deploy_result
@@ -79,10 +85,13 @@
   retries: 50
   delay: 10
 
+# NOTE: This will take a long time at the moment mainly because the current release of the syndesis operator will try to upgrade postgres deployment to new version and it will fail.
+# But openshift will roll it back eventually and everything will work again. It just take a while.
+# Once new release of syndesis operator is available, this shouldn't be an issue anymore and we can reduce the wait time.
 - name: Verify Fuse deployment succeeded
   shell: oc get pods -n {{ fuse_namespace }} --selector="app=syndesis" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w
   register: fuse_verify_result
   until: fuse_verify_result.stdout|int >= 7
-  retries: 50
+  retries: 100
   delay: 10
   changed_when: False
