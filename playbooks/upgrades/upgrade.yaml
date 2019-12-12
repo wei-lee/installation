@@ -178,7 +178,8 @@
         - apicurito
         - codeready
         - enmasse
-        - fuse
+        # Ignored for 1.6 release as it is not required (image streams are moved to Fuse's own namespace). May still be required in the future.
+        # - fuse
         - launcher
         - sso
         - webapp
