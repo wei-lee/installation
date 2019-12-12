@@ -11,6 +11,16 @@
     namespace: "{{ fuse_namespace }}"
     product_ns_pull_secret_name: "{{ fuse_pull_secret_name }}"
 
+- name: Get existing Grafana dashboards
+  shell: oc get grafanadashboards -o name -n {{ fuse_namespace }}
+  register: existing_grafana_dashboards_cmd
+
+- name: Delete existing Grafana dashboards
+  shell: "oc delete {{ item }} -n {{ fuse_namespace }}"
+  register: output
+  failed_when: output.stderr != '' and 'not found' not in output.stderr
+  with_items: "{{ existing_grafana_dashboards_cmd.stdout_lines }}"
+
 # patches syndesis operator to remove args passed in previous install
 - name: TODO-THIS-IS-ONLY-NEEDED-ON-UPGRADES-FROM-FUSE-1.7-INSTALLS
   shell: oc patch dc/syndesis-operator -p='{"spec":{"template":{"spec":{"containers":[{"name":"syndesis-operator","args":[]}]}}}}}' -n {{ fuse_namespace }}
@@ -42,3 +52,15 @@
 
 - name: Remove Komodo-Server DC
   shell: oc delete dc komodo-server --namespace {{ fuse_namespace }}
+
+- name: Patch db deployment configs to make sure they are using image streams from the right namespace
+  shell: oc patch dc/syndesis-db --type=json --patch='[{"op":"replace", "path":"/spec/triggers/1/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}, {"op":"replace", "path":"/spec/triggers/2/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}]'
+
+- name: Patch all the other infrastructure deployment configs to make sure they are using image streams from the right namespace
+  shell: oc patch dc/{{ item }} --type=json --patch='[{"op":"replace", "path":"/spec/triggers/0/imageChangeParams/from/namespace", "value":"{{ fuse_namespace }}"}]'
+  with_items:
+    - syndesis-meta
+    - syndesis-oauthproxy
+    - syndesis-prometheus
+    - syndesis-server
+    - syndesis-ui
