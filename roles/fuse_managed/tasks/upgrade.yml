@@ -21,6 +21,26 @@
   failed_when: output.stderr != '' and 'not found' not in output.stderr
   with_items: "{{ existing_grafana_dashboards_cmd.stdout_lines }}"
 
+- name: Get existing service monitors
+  shell: oc get servicemonitor -o name -n {{ fuse_namespace }}
+  register: existing_service_monitor
+
+- name: Delete existing service monitor
+  shell: "oc delete {{ item }} -n {{ fuse_namespace }}"
+  register: output
+  failed_when: output.stderr != '' and 'not found' not in output.stderr
+  with_items: "{{ existing_service_monitor.stdout_lines }}"
+
+- name: Get existing prometheus rules
+  shell: oc get prometheusrules -o name -n {{ fuse_namespace }}
+  register: existing_prometheus_rules
+
+- name: Delete existing prometheus rules
+  shell: "oc delete {{ item }} -n {{ fuse_namespace }}"
+  register: output
+  failed_when: output.stderr != '' and 'not found' not in output.stderr
+  with_items: "{{ existing_prometheus_rules.stdout_lines }}"
+
 # patches syndesis operator to remove args passed in previous install
 - name: TODO-THIS-IS-ONLY-NEEDED-ON-UPGRADES-FROM-FUSE-1.7-INSTALLS
   shell: oc patch dc/syndesis-operator -p='{"spec":{"template":{"spec":{"containers":[{"name":"syndesis-operator","args":[]}]}}}}}' -n {{ fuse_namespace }}
