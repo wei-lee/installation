@@ -72,6 +72,13 @@
     - syndesis-server
     - syndesis-ui
 
+- name: Wait for a new deployment is started
+  shell: oc get pods | grep -- "-deploy" | wc -l
+  register: deploy_result
+  until: deploy_result.stdout|int > 0
+  retries: 50
+  delay: 10
+
 - name: Verify Fuse deployment succeeded
   shell: oc get pods -n {{ fuse_namespace }} --selector="app=syndesis" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w
   register: fuse_verify_result
