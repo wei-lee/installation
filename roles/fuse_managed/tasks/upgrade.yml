@@ -65,6 +65,8 @@
 
 - name: Remove Komodo-Server DC
   shell: oc delete dc komodo-server --namespace {{ fuse_namespace }}
+  register: result
+  failed_when: result.stderr != '' and 'not found' not in result.stderr
 
 - template:
     src: syndesis-customresource.yml.j2
