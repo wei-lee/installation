@@ -40,6 +40,12 @@
     src: /tmp/fuse-binary-archive
     dest: /tmp/fuse-binary
 
+- name: Run operator install
+  shell: "/tmp/fuse-binary/syndesis-operator install operator  --wait --namespace {{ fuse_namespace }}"
+
+- name: Remove Komodo-Server DC
+  shell: oc delete dc komodo-server --namespace {{ fuse_namespace }}
+
 - template:
     src: syndesis-customresource.yml.j2
     dest: /tmp/syndesis-customresource.yml
@@ -47,20 +53,10 @@
 - name: Update Syndesis custom resource in {{ fuse_namespace }}
   shell: oc apply -f /tmp/syndesis-customresource.yml -n {{ fuse_namespace }}
 
-- name: Run operator install
-  shell: "/tmp/fuse-binary/syndesis-operator install operator  --wait --namespace {{ fuse_namespace }}"
-
-- name: Remove Komodo-Server DC
-  shell: oc delete dc komodo-server --namespace {{ fuse_namespace }}
-
-- name: sleep for 20 seconds before checking syndesis operator status
-  wait_for:
-    timeout: 20
-
-- name: check all syndesis resources are installed
-  shell: oc get syndesis fuse-managed -o jsonpath="{.status.phase}" -n {{ fuse_namespace }}
-  register: output
-  until: output.stdout == "Installed"
+- name: Wait for new image streams are avilable
+  shell: oc get imagestream -n {{ fuse_namespace }} -l "syndesis.io/app=syndesis" -o name | wc -l
+  register: is_output
+  until: is_output.stdout|int >= 8
   retries: 50
   delay: 10
 
@@ -75,3 +71,11 @@
     - syndesis-prometheus
     - syndesis-server
     - syndesis-ui
+
+- name: Verify Fuse deployment succeeded
+  shell: oc get pods -n {{ fuse_namespace }} --selector="app=syndesis" -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w
+  register: fuse_verify_result
+  until: fuse_verify_result.stdout|int >= 7
+  retries: 50
+  delay: 10
+  changed_when: False
