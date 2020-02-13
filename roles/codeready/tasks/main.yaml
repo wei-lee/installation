@@ -9,7 +9,6 @@
     monitor: true
     is_service: true
 
-- include_tasks: download_installer.yml
 - include_tasks: install.yml
 
 - name: Set the launcher keycloak user as admin within the che deployment
